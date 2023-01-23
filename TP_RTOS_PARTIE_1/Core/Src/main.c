@@ -204,6 +204,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+//test
 
     /* USER CODE BEGIN 3 */
   }
