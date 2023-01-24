@@ -73,52 +73,49 @@ int __io_putchar(int ch){
       }
   }*/
 
+
+
 void vTaskTake( void * pvParameters )
   {
-	  char RxTimerBuff[100];
+
       for( ;; )
       {
-    	 /* printf("Task va prendre le semaphore\r\n");
-    	 // xSemaphoreTake(xSemaphore1 ,portMAX_DELAY );
-    		printf("Semaphore pris: \r\n");*/
-    	  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
-    		if(xQueueReceive(xQueue1,(void*)RxTimerBuff, (TickType_t)5))
-    		{
-    	printf("timer: %s\r\n", RxTimerBuff);
-    		}
-
+    	  char RxTimerBuff[100];
+    	  printf("Task va prendre le semaphore\r\n");
+    	  //if(xSemaphoreTake(xSemaphore1 ,1000) == pdTRUE)
+    		  if(ulTaskNotifyTake(pdTRUE, 1000) == pdTRUE)
+    			  {
+    		  printf("Semaphore pris: \r\n");
+    		  if(xQueueReceive(xQueue1,(void*)RxTimerBuff, (TickType_t)5))
+    		  		{
+    		     	printf("timer: %s\r\n", RxTimerBuff);
+    		      		}
+    			  }
+    	  else{
+    		  printf("reset\r\n");
+    		 NVIC_SystemReset();
+    		 i=0;
+    	  }
       }
   }
 
-void vTaskGive( void * pvParameters )
+vTaskGive( void * pvParameters )
   {
-
 	char TxTimerBuff[100];
 	xQueue1 = xQueueCreate(10, sizeof(TxTimerBuff));
       for( ;; )
-      {		  /*printf("Task va donner le semaphore\r\n");
-
+      {		  printf("Task va donner le semaphore\r\n");
     	  	  //xSemaphoreGive( xSemaphore1 );
-    	  	  printf("Semaphore donné\r\n");*/
+      sprintf(TxTimerBuff, "%d",i);
+       	  xQueueSend(xQueue1, (void*) TxTimerBuff,(TickType_t) 0);
+
+      	  	  xTaskNotifyGive(xHandle3);
+    	  	  printf("Semaphore donné\r\n");
 		     // printf("i= %d",i);
-
-    	  sprintf(TxTimerBuff, "%d",i);
-    	  xQueueSend(xQueue1, (void*) TxTimerBuff,(TickType_t) 0);
-       	  xTaskNotifyGive(xHandle3);
-
-
     	  vTaskDelay(i);
     	  i=i+100;
-    	// printf("%d\r\n",i);
-		      if(i>1000){
-		    	  printf("reset\r\n");
-		    	  NVIC_SystemReset();
-		      }
-
       }
   }
-
 
 
 
@@ -158,7 +155,6 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
 
 
         /* Create the task, storing the handle. */
